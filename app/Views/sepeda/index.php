@@ -11,7 +11,7 @@
       <th scope="col">#</th>
       <th scope="col">Produk</th>
       <th scope="col">Nama</th>
-      <th scope="col">Aksi</th>
+      <th scope="col">Merk</th>
     </tr>
   </thead>
   <tbody>
@@ -23,7 +23,7 @@
       <td><img src="/img/<?= $s['produk'];?>" alt="" ></td>
       <td><?= $s['nama'];?></td>
       <td>
-      <a href=""class="btn btn-success">Detail</a>
+      <td><?= $s['merk'];?></td>
       </td>
     </tr>
     <?php endforeach; ?>
