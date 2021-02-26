@@ -33,6 +33,10 @@ $routes->setAutoRoute(true);
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'Pages::index');
+$routes->get('/sepeda/create', 'Sepeda::create');
+$routes->get('/sepeda/edit/(:segment)', 'Sepeda::edit/$1');
+$routes->delete('/sepeda/(:num)', 'Sepeda::delete/$1');
+$routes->get('/sepeda/(:any)', 'Sepeda::detail/$1');
 
 /*
  * --------------------------------------------------------------------
