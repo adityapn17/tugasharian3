@@ -64,18 +64,41 @@ class Sepeda extends BaseController
                     'required' => '{field} sepeda harus diisi.',
                     'is_unique' => '{field sepeda sudah terdaftar'
                 ]
-            ]
+                    ],
+                    'produk' => [
+                        'rules' => 'max_size[produk,1024]|is_image[produk]|mime_in[produk,image/jpg,image/jpeg,image/png]',
+                        'errors' =>[
+                            'max_size' => 'Ukuran gambar terlalu besar',
+                            'is_image' => 'yang anda pilih bukan gambar',
+                            'mime_in' => 'yang anda pilih bukan gambar'
+                        ]
+                    ]
         ])){
-            $validation = \Config\Services:: validation();
-            return redirect()->to('/sepeda/create')->withInput()->with('validation', $validation);
+            // $validation = \Config\Services:: validation();
+            // return redirect()->to('/sepeda/create')->withInput()->with('validation', $validation);
+            return redirect()->to('/sepeda/create')->withInput();
         }
+
+         // ambil gambar
+         $fileProduk = $this->request->getFile('produk');
+         // jika tidak upload gambar
+         if ($fileProduk->getError() == 4) {
+             $namaProduk = 'default.jpg';
+         } else {
+             
+             //generate nama produk random
+             $namaProduk = $fileProduk->getRandomName();
+             // pindahkan file ke folder img
+             $fileProduk->move('img', $namaProduk);
+         }
+            
         $slug = url_title($this->request->getVar('nama'), '-', true);
        $this->sepedaModel->save(
            [
                'nama' => $this->request->getVar('nama'),
                'slug' =>$slug,
                'merk' => $this->request->getVar('merk'),
-               'produk' => $this->request->getVar('produk')
+               'produk' => $namaProduk
            ]
        );
 
@@ -86,6 +109,15 @@ class Sepeda extends BaseController
 
     public function delete($id)
     {
+        //cari gambar berdasarkan id
+        $sepeda = $this->sepedaModel->find($id);
+
+        //cek jika file default.jpg
+        if ($sepeda['produk'] != 'default.jpg') {          
+            //hapus gambar
+            unlink('img/' . $sepeda['produk']);
+        }
+
         $this->sepedaModel->delete($id);
         session()->setFlashdata('pesan', 'Data berhasil dihapus.');
         return redirect()->to("/sepeda");
